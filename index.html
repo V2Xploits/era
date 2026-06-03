@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Era</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --white:#ffffff;
+  --dim:#555;
+  --dim2:#777;
+  --dim3:#999;
+  --border:#1a1a1a;
+  --border2:#252525;
+  --bg:#040404;
+  --card:#0a0a0a;
+  --card2:#0f0f0f;
+  --r:10px;--r-sm:7px;--r-lg:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Geist',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none}
+
+#cursor-ray{
+  position:fixed;
+  top:0;left:0;
+  width:400px;height:400px;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 25%, transparent 65%);
+  border-radius:50%;
+  transition:transform 0.08s ease;
+  will-change:transform;
+}
+#cursor-dot{
+  position:fixed;
+  top:0;left:0;
+  width:5px;height:5px;
+  background:#fff;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:10000;
+  transform:translate(-50%,-50%);
+  opacity:0.7;
+  transition:transform 0.04s ease;
+  will-change:transform;
+}
+
+#star-canvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:1;
+}
+
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:1;
+  opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+nav,section,.section,.perf-strip,.pricing-wrap,.final,footer{position:relative;z-index:2}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:52px;
+  border-bottom:1px solid var(--border);
+  background:rgba(4,4,4,0.82);
+  backdrop-filter:blur(20px);
+}
+.nav-logo{font-size:15px;font-weight:700;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
+.nav-logo-mark{width:22px;height:22px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#000;font-size:11px;font-weight:900}
+.nav-links{display:flex;gap:24px}
+.nav-links a{color:var(--dim2);font-size:13px;font-weight:500;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{background:var(--white);color:#000;font-family:'Geist',sans-serif;font-weight:600;font-size:12px;padding:7px 16px;border:none;cursor:none;border-radius:var(--r-sm);transition:opacity .2s;display:flex;align-items:center;gap:6px}
+.nav-cta:hover{opacity:.85}
+
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 100px;
+  position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-60%);
+  width:1000px;height:700px;
+  background:radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,255,255,0.048) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-beam{
+  position:absolute;bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:1px;height:200px;
+  background:linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+  pointer-events:none;
+}
+
+h1{
+  font-size:clamp(58px,8vw,106px);
+  font-weight:800;
+  line-height:.95;
+  letter-spacing:-4px;
+  margin-bottom:28px;
+  max-width:900px;
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, rgba(255,255,255,0.38) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.section-title{
+  font-size:clamp(30px,4vw,50px);
+  font-weight:800;letter-spacing:-1.8px;line-height:1.04;
+  margin-bottom:52px;
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 30%, rgba(255,255,255,0.35) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:inline-block;
+}
+.final-title{
+  font-size:clamp(38px,5.5vw,68px);
+  font-weight:800;letter-spacing:-2.5px;line-height:.97;
+  margin-bottom:22px;
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 35%, rgba(255,255,255,0.3) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:inline-block;
+}
+
+.hero-sub{
+  font-family:'Geist',sans-serif;
+  font-size:17px;
+  color:rgba(255,255,255,0.42);
+  max-width:480px;
+  line-height:1.65;
+  margin-bottom:40px;
+  letter-spacing:0px;
+}
+
+.hero-stats{display:flex;gap:8px;margin-bottom:36px;flex-wrap:wrap;justify-content:center}
+.stat-pill{
+  background:rgba(255,255,255,0.035);
+  border:1px solid var(--border2);
+  border-radius:100px;
+  padding:5px 14px;
+  font-family:'Geist',monospace;
+  font-size:11px;color:var(--dim2);
+  display:flex;align-items:center;gap:6px;
+}
+.stat-pill strong{color:rgba(255,255,255,0.75);font-weight:500}
+
+.hero-btns{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.btn-primary{
+  background:var(--white);color:#000;
+  font-family:'Geist',sans-serif;font-weight:600;font-size:13px;
+  padding:11px 22px;border:none;cursor:none;
+  display:inline-flex;align-items:center;gap:7px;
+  text-decoration:none;transition:opacity .2s;border-radius:var(--r-sm);
+}
+.btn-primary:hover{opacity:.86}
+.btn-ghost{
+  background:transparent;color:var(--dim2);
+  font-family:'Geist',sans-serif;font-weight:500;font-size:13px;
+  padding:11px 22px;border:1px solid var(--border2);
+  cursor:none;display:inline-flex;align-items:center;gap:7px;
+  text-decoration:none;transition:border-color .2s,color .2s;border-radius:var(--r-sm);
+}
+.btn-ghost:hover{border-color:#444;color:#bbb}
+
+.section{padding:80px 40px;max-width:1100px;margin:0 auto}
+.section-kicker{
+  font-family:'Geist',sans-serif;
+  font-size:11px;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;font-weight:500;
+}
+
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,auto);
+  gap:12px;
+}
+@media(max-width:860px){.features-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.features-grid{grid-template-columns:1fr}}
+
+.feature-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:26px 22px;
+  transition:background .25s,border-color .25s;
+  position:relative;overflow:hidden;
+}
+.feature-card::after{
+  content:'';position:absolute;inset:0;border-radius:var(--r-lg);
+  background:linear-gradient(140deg,rgba(255,255,255,0.022) 0%,transparent 55%);
+  pointer-events:none;
+}
+.feature-card:hover{background:var(--card2);border-color:#272727}
+
+.feat-icon{width:34px;height:34px;border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:14px;background:rgba(255,255,255,0.025)}
+.feat-stat{font-size:30px;font-weight:800;letter-spacing:-1px;margin-bottom:3px;line-height:1}
+.feat-stat-sub{font-family:'Geist',sans-serif;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:10px;font-weight:500}
+.feat-title{font-size:14px;font-weight:700;margin-bottom:8px;letter-spacing:-0.3px}
+.feat-desc{font-size:12px;color:var(--dim2);line-height:1.72;font-family:'Geist',sans-serif;font-weight:400}
+.feat-tag{display:inline-flex;margin-top:14px;font-family:'Geist',sans-serif;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#2e2e2e;border:1px solid #181818;padding:3px 9px;border-radius:100px;font-weight:500}
+
+.perf-strip{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:52px 40px}
+.perf-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.perf-item{padding:20px 40px;border-right:1px solid var(--border)}
+.perf-item:last-child{border-right:none}
+.perf-num{
+  font-size:52px;font-weight:800;letter-spacing:-2.5px;line-height:1;margin-bottom:6px;
+  background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.4) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;
+}
+.perf-label{font-family:'Geist',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);font-weight:500}
+
+.pricing-wrap{padding:80px 40px;border-top:1px solid var(--border)}
+.pricing-inner{max-width:1100px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:52px}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 24px;display:flex;flex-direction:column;transition:border-color .25s}
+.price-card:hover{border-color:#2a2a2a}
+.price-card.featured{background:#090909;border-color:#fff;border-width:1.5px}
+.plan-label{font-family:'Geist',sans-serif;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--dim);margin-bottom:16px;font-weight:500}
+.price-num{
+  font-size:46px;font-weight:800;letter-spacing:-2px;line-height:1;
+  background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.5) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;
+}
+.price-period{font-size:12px;color:var(--dim);font-family:'Geist',sans-serif;margin-top:4px;margin-bottom:22px}
+.price-hr{width:100%;height:1px;background:var(--border);margin-bottom:20px}
+.price-list{list-style:none;display:flex;flex-direction:column;gap:10px;flex:1}
+.price-list li{font-size:12px;color:#666;font-family:'Geist',sans-serif;display:flex;align-items:center;gap:10px}
+.price-list li::before{content:'—';color:#222;font-size:11px}
+.price-card.featured .price-list li{color:#999}
+.price-card.featured .price-list li::before{content:'→';color:#fff}
+.price-action{margin-top:24px;text-align:center;padding:11px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:'Geist',sans-serif;font-weight:600;font-size:12px;cursor:none;background:transparent;color:var(--dim2);transition:all .2s;text-decoration:none;display:block}
+.price-action:hover{border-color:#555;color:#ddd}
+.price-card.featured .price-action{background:var(--white);color:#000;border-color:var(--white)}
+.price-card.featured .price-action:hover{opacity:.86}
+.popular-tag{display:inline-block;background:#fff;color:#000;font-family:'Geist',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:100px;margin-bottom:16px;font-weight:600}
+
+.final{padding:110px 40px;text-align:center;position:relative;overflow:hidden;border-top:1px solid var(--border)}
+.final-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:350px;background:radial-gradient(ellipse 55% 70% at 50% 0%,rgba(255,255,255,0.055) 0%,transparent 70%);pointer-events:none}
+.final-sub{font-family:'Geist',sans-serif;font-style:italic;font-size:17px;color:rgba(255,255,255,0.38);margin-bottom:36px;position:relative;z-index:1}
+.final-btns{display:flex;gap:10px;justify-content:center;position:relative;z-index:1}
+
+footer{border-top:1px solid var(--border);padding:22px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.foot-logo{font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px}
+.foot-mark{width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#000;font-size:10px;font-weight:900}
+.foot-copy{font-family:'Geist',sans-serif;font-size:11px;color:var(--dim)}
+.foot-links{display:flex;gap:18px}
+.foot-link{font-family:'Geist',sans-serif;font-size:11px;color:var(--dim);text-decoration:none;transition:color .2s}
+.foot-link:hover{color:#bbb}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div id="cursor-ray"></div>
+<div id="cursor-dot"></div>
+
+<div class="grain"></div>
+
+<canvas id="star-canvas"></canvas>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">★</div>
+    ERA
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#">Status</a>
+    <a href="#">Discord</a>
+  </div>
+  <button class="nav-cta">
+    Get Era
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+  </button>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+
+  <h1 class="fade-up">The tool<br/>you need.</h1>
+
+  <p class="hero-sub fade-up">A powerful Roblox executor built for speed and compatibility. 99% UNC, 100% sUNC. Era runs everything, smoothly, on any machine.</p>
+
+  <div class="hero-stats fade-up">
+    <div class="stat-pill"><strong>99%</strong> UNC</div>
+    <div class="stat-pill"><strong>100%</strong> sUNC</div>
+    <div class="stat-pill"><strong>Multi</strong> Instance</div>
+    <div class="stat-pill"><strong>RakNet</strong> Library</div>
+    <div class="stat-pill"><strong>Full</strong> Decompiler</div>
+  </div>
+
+  <div class="hero-btns fade-up">
+    <a href="#pricing" class="btn-primary">
+      Get Started
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+    </a>
+    <a href="#features" class="btn-ghost">See Features</a>
+  </div>
+
+  <div class="hero-beam"></div>
+</section>
+
+<div id="features" style="border-top:1px solid var(--border)">
+  <div class="section">
+    <p class="section-kicker fade-up">What's inside</p>
+    <h2 class="section-title fade-up">Built different.<br/>Runs everything.</h2>
+    <div class="features-grid">
+
+      <div class="feature-card fade-up">
+        <div class="feat-icon">◎</div>
+        <div class="feat-stat">99%</div>
+        <div class="feat-stat-sub">UNC Support</div>
+        <div class="feat-desc">Full unified naming convention support. Every function implemented cleanly and correctly. No encountering any issues or errors while executin scripts.</div>
+        <div class="feat-tag">UNC</div>
+      </div>
+
+      <div class="feature-card fade-up" style="transition-delay:.06s">
+        <div class="feat-icon">◈</div>
+        <div class="feat-stat">100%</div>
+        <div class="feat-stat-sub">sUNC Support</div>
+        <div class="feat-desc">Full sUNC support. Every function tested and coded carefully while making sure it works perfectly, No crashes or errors.</div>
+        <div class="feat-tag">sUNC</div>
+      </div>
+
+      <div class="feature-card fade-up" style="transition-delay:.12s">
+        <div class="feat-icon">⬡</div>
+        <div class="feat-title">Decompiler</div>
+        <div class="feat-desc">Built-in Luau decompiler. Directly reverse luau scripts while analyzing the code and implementing something out of it.</div>
+        <div class="feat-tag">Decompile</div>
+      </div>
+
+      <div class="feature-card fade-up" style="transition-delay:.18s">
+        <div class="feat-icon">▦</div>
+        <div class="feat-title">Multi-Instance</div>
+        <div class="feat-desc">Run multiple Roblox instances simultaneously. Farm, grind, and test scripts across accounts all at once.</div>
+        <div class="feat-tag">Multi-task</div>
+      </div>
+
+      <div class="feature-card fade-up" style="transition-delay:.24s">
+        <div class="feat-icon">↻</div>
+        <div class="feat-title">RakNet Library</div>
+        <div class="feat-desc">Direct access to Roblox's RakNet layer. Send and intercept network packets - low-level power built right in.</div>
+        <div class="feat-tag">Network</div>
+      </div>
+
+      <div class="feature-card fade-up" style="transition-delay:.30s">
+        <div class="feat-icon">◻</div>
+        <div class="feat-title">Always Updated</div>
+        <div class="feat-desc">Era updates itself after every Roblox update. Short downtime and 24/7 tracking, zero manual steps. Open it and it just works.</div>
+        <div class="feat-tag">Auto-patch</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="perf-strip">
+  <div class="perf-inner">
+    <div class="perf-item fade-up">
+      <div class="perf-num">99%</div>
+      <div class="perf-label">UNC coverage</div>
+    </div>
+    <div class="perf-item fade-up" style="transition-delay:.08s">
+      <div class="perf-num">0</div>
+      <div class="perf-label">detections</div>
+    </div>
+    <div class="perf-item fade-up" style="transition-delay:.16s">
+      <div class="perf-num">24/7</div>
+      <div class="perf-label">auto-patch</div>
+    </div>
+  </div>
+</div>
+
+<div id="pricing" class="pricing-wrap">
+  <div class="pricing-inner">
+    <p class="section-kicker fade-up">Pricing</p>
+    <h2 class="section-title fade-up">Simple.<br/>No surprises.</h2>
+    <div class="pricing-grid">
+
+      <div class="price-card fade-up">
+        <div class="plan-label">Weekly</div>
+        <div class="price-num">$2.99</div>
+        <div class="price-period">/ week</div>
+        <div class="price-hr"></div>
+        <ul class="price-list">
+          <li>99% UNC / 100% sUNC</li>
+          <li>Decompiler</li>
+          <li>Multi-Instance</li>
+          <li>RakNet Library</li>
+          <li>Discord support</li>
+        </ul>
+        <a href="#" class="price-action">Buy Day Pass</a>
+      </div>
+
+      <div class="price-card featured fade-up" style="transition-delay:.09s">
+        <div class="popular-tag">Most Popular</div>
+        <div class="plan-label">Monthly</div>
+        <div class="price-num">$9.99 (Save 23%)</div>
+        <div class="price-period">/ month</div>
+        <div class="price-hr"></div>
+        <ul class="price-list">
+          <li>99% UNC / 100% sUNC</li>
+          <li>Decompiler</li>
+          <li>Multi-Instance</li>
+          <li>RakNet Library</li>
+          <li>Faster Discord support</li>
+        </ul>
+        <a href="#" class="price-action">Get Started ↗</a>
+      </div>
+
+      <div class="price-card fade-up" style="transition-delay:.18s">
+        <div class="plan-label">Lifetime</div>
+        <div class="price-num">$60</div>
+        <div class="price-period">one-time</div>
+        <div class="price-hr"></div>
+        <ul class="price-list">
+          <li>Everything in Monthly</li>
+          <li>Lifetime updates</li>
+          <li>Early feature access</li>
+          <li>Founder badge</li>
+          <li>Pay once, own forever</li>
+        </ul>
+        <a href="#" class="price-action">Buy Lifetime</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="final">
+  <div class="final-glow"></div>
+  <h2 class="final-title fade-up">Built for players<br/>who demand more.</h2>
+  <p class="final-sub fade-up">Download in seconds. Run instantly.</p>
+  <div class="final-btns fade-up">
+    <a href="#pricing" class="btn-primary">
+      Get Era
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+    </a>
+    <a href="#features" class="btn-ghost">See Features</a>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-logo"><div class="foot-mark">★</div> ERA</div>
+  <span class="foot-copy">© 2026 getera.xyz — All rights reserved</span>
+  <div class="foot-links">
+    <a href="#" class="foot-link">Discord</a>
+    <a href="#" class="foot-link">Terms</a>
+    <a href="#" class="foot-link">Status</a>
+  </div>
+</footer>
+
+<script>
+const ray = document.getElementById('cursor-ray');
+const dot = document.getElementById('cursor-dot');
+let mx = -999, my = -999;
+let rx = -999, ry = -999;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px';
+  dot.style.top  = my + 'px';
+});
+
+(function animCursor(){
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ray.style.left = rx + 'px';
+  ray.style.top  = ry + 'px';
+  requestAnimationFrame(animCursor);
+})();
+
+const canvas = document.getElementById('star-canvas');
+const ctx    = canvas.getContext('2d');
+
+function resizeCanvas(){
+  canvas.width  = window.innerWidth;
+  canvas.height = document.body.scrollHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('load', resizeCanvas);
+
+const STAR_COUNT = 180;
+const stars = [];
+
+for(let i = 0; i < STAR_COUNT; i++){
+  stars.push({
+    x: Math.random(),
+    y: Math.random(),
+    r: Math.random() * 0.9 + 0.3,
+    speed: 0.0004 + Math.random() * 0.0008,
+    phase: Math.random() * Math.PI * 2,
+    period: 2.5 + Math.random() * 4,
+  });
+}
+
+let lastTime = 0;
+function drawStars(ts){
+  const dt = ts - lastTime; lastTime = ts;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  stars.forEach(s => {
+    s.phase += (dt / 1000) * (Math.PI * 2 / s.period);
+    const alpha = (Math.sin(s.phase) * 0.5 + 0.5) * 0.6;
+    ctx.beginPath();
+    ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+requestAnimationFrame(drawStars);
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold: 0.1});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
