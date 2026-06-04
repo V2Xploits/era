@@ -706,7 +706,6 @@ function CloseKey() {
 }
 
 async function SubmitKey() {
-  console.log('SubmitKey called');
   const key = document.getElementById('keyInput').value.trim();
   const err = document.getElementById('keyError');
   const btn = document.getElementById('keyUnlockBtn');
@@ -723,7 +722,11 @@ async function SubmitKey() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key }),
     });
-    const data = await res.json();
+    console.log('Status:', res.status);
+    console.log('Headers:', [...res.headers.entries()]);
+    const text = await res.text();
+    console.log('Body:', text);
+    const data = JSON.parse(text);
 
     if (data.success) {
       if (data.download) {
@@ -740,7 +743,8 @@ async function SubmitKey() {
       btn.disabled = false;
       btn.textContent = 'Unlock download';
     }
-  } catch {
+  } catch(e) {
+    console.log('Error:', e);
     err.textContent = 'Server error. Try again later.';
     err.style.display = 'block';
     btn.disabled = false;
