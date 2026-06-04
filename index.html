@@ -706,8 +706,6 @@ async function SubmitKey() {
   const err = document.getElementById('keyError');
   const btn = document.getElementById('keyUnlockBtn');
 
-  console.log('Sending key:', key);
-
   err.style.display = 'none';
   if (!key) { err.textContent = 'Please enter your key.'; err.style.display = 'block'; return; }
 
@@ -715,15 +713,12 @@ async function SubmitKey() {
   btn.textContent = 'Checking...';
 
   try {
-    const res = await fetch(`https://era-backend.noahsmrx.workers.dev/api/validate`, {
+    const res = await fetch(`https://api.getera.xyz/api/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key }),
     });
-    console.log('Status:', res.status);
-    console.log('Headers:', [...res.headers.entries()]);
     const text = await res.text();
-    console.log('Body:', text);
     const data = JSON.parse(text);
 
     if (data.success) {
@@ -732,11 +727,11 @@ async function SubmitKey() {
         window.location.href = data.download;
         setTimeout(CloseKey, 2000);
       } else {
-        btn.textContent = 'Key Valid ✓';
+        btn.textContent = 'Key Valid';
         setTimeout(CloseKey, 2000);
       }
     } else {
-      err.textContent = data.error ?? 'Invalid key. Try again.';
+      err.textContent = data.error ?? 'Invalid key. Try again';
       err.style.display = 'block';
       btn.disabled = false;
       btn.textContent = 'Unlock download';
