@@ -265,7 +265,7 @@ footer{border-top:1px solid var(--border);padding:22px 40px;display:flex;align-i
 .fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
 .fade-up.visible{opacity:1;transform:translateY(0)}
 
-  .key-overlay{
+.key-overlay{
   position:fixed;inset:0;
   background:rgba(0,0,0,0.78);
   display:flex;align-items:center;justify-content:center;
@@ -276,133 +276,110 @@ footer{border-top:1px solid var(--border);padding:22px 40px;display:flex;align-i
 .key-overlay.open{opacity:1;pointer-events:all}
 
 .key-box{
-  background:#0c0c0c;
-  border:1px solid #1e1e1e;
-  border-radius:20px;
-  padding:32px 28px 26px;
-  width:100%;max-width:460px;
+  width:440px;
+  background:radial-gradient(at 50% -20%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 55%), rgba(11,11,15,0.94);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  padding:30px 28px 22px;
   text-align:center;
   position:relative;
   overflow:hidden;
 }
 
-.key-beam{
-  position:absolute;top:0;left:50%;
-  transform:translateX(-50%);
-  width:280px;height:1px;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-}
-.key-beam::after{
-  content:'';
-  position:absolute;top:0;left:50%;
-  transform:translateX(-50%);
-  width:120px;height:60px;
-  background:radial-gradient(ellipse at top, rgba(255,255,255,0.07) 0%, transparent 70%);
-}
-
 .key-close-btn{
   position:absolute;top:14px;right:14px;
-  width:28px;height:28px;
-  background:#141414;border:1px solid #252525;
+  width:26px;height:26px;
+  background:#141414;border:1px solid rgba(255,255,255,0.06);
   border-radius:7px;color:#555;
-  font-size:12px;cursor:pointer;
+  cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:color .2s,border-color .2s;
 }
 .key-close-btn:hover{color:#fff;border-color:#444}
 
-.key-logo{
-  display:inline-flex;align-items:center;justify-content:center;
-  background:#111;border:1px solid #222;
-  border-radius:10px;
-  padding:6px 14px;
-  font-size:13px;font-weight:800;letter-spacing:0.5px;
-  margin-bottom:20px;
-}
-
 .key-title{
-  font-size:19px;font-weight:800;
-  letter-spacing:-0.6px;line-height:1.2;
-  margin-bottom:12px;
-  background:linear-gradient(180deg, #ffffff 0%, #ffffff 40%, rgba(255,255,255,0.35) 100%);
+  font-size:22px;font-weight:700;
+  letter-spacing:-0.4px;line-height:1.2;
+  margin-bottom:10px;
+  background:linear-gradient(180deg, rgb(255,255,255) 0%, rgb(154,154,164) 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
   display:inline-block;width:100%;
 }
 .key-sub{
-  font-size:12px;color:#4a4a4a;
+  font-size:13px;color:rgba(244,244,246,0.38);
   font-family:'Geist',sans-serif;
-  line-height:1.65;margin-bottom:18px;
+  line-height:1.65;margin-bottom:20px;
 }
 
 .key-field{
   position:relative;margin-bottom:8px;
 }
-.key-ring{
-  position:absolute;inset:-1px;
-  border-radius:11px;
-  background:linear-gradient(135deg, #2a2a2a, #1a1a1a, #2e2e2e);
-  z-index:0;
-  transition:opacity .2s;
-}
 .key-input{
-  position:relative;z-index:1;
   width:100%;
-  padding:11px 16px;
-  background:linear-gradient(135deg, #181818 0%, #0e0e0e 50%, #1a1a1a 100%);
-  border:1px solid transparent;
-  border-radius:10px;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.024);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:9px;
   font-family:'Geist',monospace;
-  font-size:12px;font-weight:600;
-  color:#fff;
+  font-size:13.5px;font-weight:500;
+  color:rgb(244,244,246);
   text-align:center;
   letter-spacing:1.5px;
   outline:none;
-  transition:background .2s;
+  transition:border-color .2s,background .2s;
   caret-color:#fff;
+  height:39px;
+  box-sizing:border-box;
 }
 .key-input:focus{
-  background:linear-gradient(135deg, #202020 0%, #131313 50%, #1e1e1e 100%);
+  border-color:rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.04);
 }
-.key-input::placeholder{color:#2e2e2e;font-weight:400;letter-spacing:0.5px}
+.key-input::placeholder{color:rgba(255,255,255,0.15);font-weight:400;letter-spacing:0.5px}
 
 .key-error{
   font-size:12px;color:#ff4444;
   font-family:'Geist',monospace;
-  margin-bottom:8px;min-height:18px;
+  margin-bottom:6px;min-height:16px;
   display:none;text-align:center;
 }
 
 .key-btns{
   display:grid;grid-template-columns:1fr 1fr;
-  gap:10px;margin-top:18px;
+  gap:8px;margin-top:14px;
 }
 .key-cancel{
   background:transparent;
-  border:1px solid #1e1e1e;border-radius:10px;
-  font-family:'Geist',sans-serif;font-weight:600;font-size:13px;
-  color:#444;padding:15px;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;
+  font-family:'Geist',sans-serif;font-weight:500;font-size:13px;
+  color:rgb(244,244,246);padding:7px 14px;cursor:pointer;
+  height:32px;
   transition:border-color .2s,color .2s;
 }
-.key-cancel:hover{border-color:#3a3a3a;color:#bbb}
+.key-cancel:hover{border-color:rgba(255,255,255,0.15)}
 .key-unlock{
-  background:#fff;color:#000;
-  border:none;border-radius:10px;
-  font-family:'Geist',sans-serif;font-weight:700;font-size:13px;
-  padding:15px;cursor:pointer;
+  background:rgb(244,244,246);color:rgb(5,5,7);
+  border:none;border-radius:6px;
+  font-family:'Geist',sans-serif;font-weight:600;font-size:13px;
+  padding:7px 14px;cursor:pointer;
+  height:30px;
   transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;
 }
 .key-unlock:hover{opacity:.85}
 .key-unlock:disabled{opacity:.4;cursor:not-allowed}
 
 .key-footer{
-  margin-top:20px;
-  font-family:'Geist',sans-serif;font-size:12px;color:#333;
+  margin-top:16px;
+  font-family:'Geist',sans-serif;font-size:12px;
+  color:rgba(255,255,255,0.25);
 }
 .key-footer a{
-  color:#888;text-decoration:none;
-  font-weight:600;
+  color:rgba(255,255,255,0.55);
+  text-decoration:none;font-weight:600;
   transition:color .2s;
 }
 .key-footer a:hover{color:#fff}
@@ -696,7 +673,6 @@ document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
     <button class="key-close-btn" id="keyCloseBtn">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-    <div class="key-logo">ERA</div>
     <div class="key-title">Verify your key<br/>to download Era</div>
     <div class="key-sub">Enter your license key. We'll check it's valid before<br/>unlocking the download, no account is needed.</div>
     <div class="key-field">
