@@ -733,22 +733,27 @@ async function SubmitKey() {
     });
     const data = await res.json();
 
-    if (data.success && data.download) {
-      btn.textContent = 'Downloading...';
-      window.location.href = data.download;
-      setTimeout(CloseKey, 2000);
-    } else {
-      err.textContent = data.error ?? 'Invalid key. Try again.';
-      err.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Unlock download';
-    }
-  } catch {
-    err.textContent = 'Server error. Try again later.';
-    err.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Unlock download';
+   if (data.success) {
+  if (data.download) {
+    btn.textContent = 'Downloading...';
+    window.location.href = data.download;
+    setTimeout(CloseKey, 2000);
+  } else {
+    btn.textContent = 'Key Valid ✓';
+    setTimeout(CloseKey, 2000);
   }
+} else {
+  err.textContent = data.error ?? 'Invalid key. Try again.';
+  err.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = 'Unlock download';
+}
+} catch {
+  err.textContent = 'Server error. Try again later.';
+  err.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = 'Unlock download';
+}
 }
 
 document.getElementById('keyUnlockBtn').addEventListener('click', SubmitKey);
