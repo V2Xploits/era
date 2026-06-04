@@ -706,6 +706,7 @@ function CloseKey() {
 }
 
 async function SubmitKey() {
+  console.log('SubmitKey called');
   const key = document.getElementById('keyInput').value.trim();
   const err = document.getElementById('keyError');
   const btn = document.getElementById('keyUnlockBtn');
