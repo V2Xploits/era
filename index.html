@@ -586,6 +586,25 @@ footer{border-top:1px solid var(--border);padding:22px 40px;display:flex;align-i
   </div>
 </footer>
 
+<div class="key-overlay" id="keyOverlay">
+  <div class="key-box">
+    <button class="key-close-btn" id="keyCloseBtn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="key-title">Verify your key<br/>to download Era</div>
+    <div class="key-sub">Enter your license key. We'll check if its valid before unlocking the download.</div>
+    <div class="key-field">
+      <input class="key-input" id="keyInput" placeholder="ERA-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false"/>
+    </div>
+    <div class="key-error" id="keyError"></div>
+    <div class="key-btns">
+      <button class="key-cancel" id="keyCancelBtn">Cancel</button>
+      <button class="key-unlock" id="keyUnlockBtn">Unlock download</button>
+    </div>
+    <div class="key-footer">Don't have a key? <a href="https://discord.gg/YOUR_INVITE" target="_blank">Get one on our <strong>Discord</strong></a></div>
+  </div>
+</div>
+
 <script>
 const ray = document.getElementById('cursor-ray');
 const dot = document.getElementById('cursor-dot');
@@ -609,22 +628,22 @@ document.head.appendChild(fl);
 document.addEventListener('mousemove', e => {
   mx = e.clientX; my = e.clientY;
   dot.style.left = mx + 'px';
-  dot.style.top  = my + 'px';
+  dot.style.top = my + 'px';
 });
 
 (function animCursor(){
   rx += (mx - rx) * 0.12;
   ry += (my - ry) * 0.12;
   ray.style.left = rx + 'px';
-  ray.style.top  = ry + 'px';
+  ray.style.top = ry + 'px';
   requestAnimationFrame(animCursor);
 })();
 
 const canvas = document.getElementById('star-canvas');
-const ctx    = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
 function resizeCanvas(){
-  canvas.width  = window.innerWidth;
+  canvas.width = window.innerWidth;
   canvas.height = document.body.scrollHeight;
 }
 resizeCanvas();
@@ -633,13 +652,10 @@ window.addEventListener('load', resizeCanvas);
 
 const STAR_COUNT = 180;
 const stars = [];
-
 for(let i = 0; i < STAR_COUNT; i++){
   stars.push({
-    x: Math.random(),
-    y: Math.random(),
+    x: Math.random(), y: Math.random(),
     r: Math.random() * 0.9 + 0.3,
-    speed: 0.0004 + Math.random() * 0.0008,
     phase: Math.random() * Math.PI * 2,
     period: 2.5 + Math.random() * 4,
   });
@@ -649,7 +665,6 @@ let lastTime = 0;
 function drawStars(ts){
   const dt = ts - lastTime; lastTime = ts;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   stars.forEach(s => {
     s.phase += (dt / 1000) * (Math.PI * 2 / s.period);
     const alpha = (Math.sin(s.phase) * 0.5 + 0.5) * 0.6;
@@ -666,30 +681,6 @@ const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, {threshold: 0.1});
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-</script>
-  <div class="key-overlay" id="keyOverlay">
-  <div class="key-box">
-    <div class="key-beam"></div>
-    <button class="key-close-btn" id="keyCloseBtn">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-    <div class="key-title">Verify your key<br/>to download Era</div>
-    <div class="key-sub">Enter your license key. We'll check if its valid before<br/>unlocking the download.</div>
-    <div class="key-field">
-      <div class="key-ring"></div>
-      <input class="key-input" id="keyInput" placeholder="ERA-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false"/>
-    </div>
-    <div class="key-error" id="keyError"></div>
-    <div class="key-btns">
-      <button class="key-cancel" id="keyCancelBtn">Cancel</button>
-      <button class="key-unlock" id="keyUnlockBtn">Unlock download</button>
-    </div>
-    <div class="key-footer">Don't have a key? <a href="https://discord.gg/YOUR_INVITE" target="_blank">Get one on our Discord</a></div>
-  </div>
-</div>
-
-<script>
-const WORKER = "https://api.getera.xyz";
 
 document.getElementById('keyInput').addEventListener('input', function() {
   let v = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -726,34 +717,34 @@ async function SubmitKey() {
   btn.textContent = 'Checking...';
 
   try {
-    const res = await fetch(`${WORKER}/api/validate`, {
+    const res = await fetch(`api.getera.xyz/api/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key }),
     });
     const data = await res.json();
 
-   if (data.success) {
-  if (data.download) {
-    btn.textContent = 'Downloading...';
-    window.location.href = data.download;
-    setTimeout(CloseKey, 2000);
-  } else {
-    btn.textContent = 'Key Valid ✓';
-    setTimeout(CloseKey, 2000);
+    if (data.success) {
+      if (data.download) {
+        btn.textContent = 'Downloading...';
+        window.location.href = data.download;
+        setTimeout(CloseKey, 2000);
+      } else {
+        btn.textContent = 'Key Valid ✓';
+        setTimeout(CloseKey, 2000);
+      }
+    } else {
+      err.textContent = data.error ?? 'Invalid key. Try again.';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Unlock download';
+    }
+  } catch {
+    err.textContent = 'Server error. Try again later.';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Unlock download';
   }
-} else {
-  err.textContent = data.error ?? 'Invalid key. Try again.';
-  err.style.display = 'block';
-  btn.disabled = false;
-  btn.textContent = 'Unlock download';
-}
-} catch {
-  err.textContent = 'Server error. Try again later.';
-  err.style.display = 'block';
-  btn.disabled = false;
-  btn.textContent = 'Unlock download';
-}
 }
 
 document.getElementById('keyUnlockBtn').addEventListener('click', SubmitKey);
