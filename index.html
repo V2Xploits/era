@@ -718,7 +718,7 @@ async function SubmitKey() {
   btn.textContent = 'Checking...';
 
   try {
-    const res = await fetch(`https://api.getera.xyz/api/validate`, {
+    const res = await fetch(`https://era-backend.noahsmrx.workers.dev/api/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key }),
