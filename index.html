@@ -710,6 +710,8 @@ async function SubmitKey() {
   const err = document.getElementById('keyError');
   const btn = document.getElementById('keyUnlockBtn');
 
+  console.log('Sending key:', key);
+
   err.style.display = 'none';
   if (!key) { err.textContent = 'Please enter your key.'; err.style.display = 'block'; return; }
 
