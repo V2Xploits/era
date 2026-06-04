@@ -264,6 +264,104 @@ footer{border-top:1px solid var(--border);padding:22px 40px;display:flex;align-i
 
 .fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
 .fade-up.visible{opacity:1;transform:translateY(0)}
+
+  .key-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.75);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+.key-overlay.open{opacity:1;pointer-events:all}
+
+.key-box{
+  background:#0f0f0f;
+  border:1px solid #222;
+  border-radius:18px;
+  padding:40px 36px 32px;
+  width:100%;max-width:440px;
+  text-align:center;
+  position:relative;
+}
+.key-close-btn{
+  position:absolute;top:14px;right:14px;
+  width:28px;height:28px;
+  background:#1a1a1a;border:1px solid #2a2a2a;
+  border-radius:7px;color:#666;
+  font-size:13px;cursor:none;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .2s;
+}
+.key-close-btn:hover{color:#fff}
+
+.key-title{
+  font-size:22px;font-weight:800;
+  letter-spacing:-0.5px;line-height:1.25;
+  margin-bottom:12px;
+}
+.key-sub{
+  font-size:13px;color:#555;
+  font-family:'Geist',sans-serif;
+  line-height:1.65;margin-bottom:24px;
+}
+
+.key-input-wrap{
+  position:relative;margin-bottom:8px;
+}
+.key-input{
+  width:100%;
+  padding:14px 18px;
+  background:linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 50%, #1c1c1c 100%);
+  border:1px solid #2a2a2a;
+  border-radius:10px;
+  font-family:'Geist',monospace;
+  font-size:13px;font-weight:600;
+  color:#fff;
+  text-align:center;
+  letter-spacing:1px;
+  outline:none;
+  transition:border-color .2s, background .2s;
+  caret-color:#fff;
+}
+.key-input:focus{
+  border-color:#3a3a3a;
+  background:linear-gradient(135deg, #222 0%, #111 50%, #202020 100%);
+}
+.key-input::placeholder{color:#333;font-weight:400;letter-spacing:0.5px}
+
+.key-error{
+  font-size:12px;color:#ff4444;
+  font-family:'Geist',monospace;
+  margin-bottom:8px;min-height:18px;
+  display:none;
+}
+
+.key-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.key-cancel{
+  background:transparent;
+  border:1px solid #222;border-radius:9px;
+  font-family:'Geist',sans-serif;font-weight:600;font-size:13px;
+  color:#555;padding:12px;cursor:none;
+  transition:border-color .2s,color .2s;
+}
+.key-cancel:hover{border-color:#444;color:#ccc}
+.key-unlock{
+  background:#fff;color:#000;
+  border:none;border-radius:9px;
+  font-family:'Geist',sans-serif;font-weight:700;font-size:13px;
+  padding:12px;cursor:none;
+  transition:opacity .2s;
+}
+.key-unlock:hover{opacity:.85}
+.key-unlock:disabled{opacity:.4;cursor:not-allowed}
+
+.key-footer{
+  margin-top:18px;
+  font-family:'Geist',sans-serif;font-size:12px;color:#444;
+}
+.key-footer a{color:#666;text-decoration:none;transition:color .2s}
+.key-footer a:hover{color:#bbb}
 </style>
 </head>
 <body>
@@ -473,6 +571,20 @@ const dot = document.getElementById('cursor-dot');
 let mx = -999, my = -999;
 let rx = -999, ry = -999;
 
+const fc = document.createElement('canvas');
+fc.width = 64; fc.height = 64;
+const fx = fc.getContext('2d');
+fx.fillStyle = '#000';
+fx.fillRect(0,0,64,64);
+fx.fillStyle = '#fff';
+fx.font = 'bold 18px Geist, sans-serif';
+fx.textAlign = 'center';
+fx.textBaseline = 'middle';
+fx.fillText('ERA', 32, 32);
+const fl = document.createElement('link');
+fl.rel = 'icon'; fl.href = fc.toDataURL();
+document.head.appendChild(fl);
+
 document.addEventListener('mousemove', e => {
   mx = e.clientX; my = e.clientY;
   dot.style.left = mx + 'px';
@@ -533,6 +645,100 @@ const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, {threshold: 0.1});
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+  <div class="key-overlay" id="keyOverlay">
+  <div class="key-box">
+    <button class="key-close-btn" id="keyCloseBtn">✕</button>
+    <div class="key-title">Verify your key<br/>to download Era</div>
+    <div class="key-sub">Enter your license key. We'll check it's valid before<br/>unlocking the download, no account is needed.</div>
+    <div class="key-input-wrap">
+      <input class="key-input" id="keyInput" placeholder="ERA-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false"/>
+    </div>
+    <div class="key-error" id="keyError"></div>
+    <div class="key-btns">
+      <button class="key-cancel" id="keyCancelBtn">Cancel</button>
+      <button class="key-unlock" id="keyUnlockBtn">Unlock download</button>
+    </div>
+    <div class="key-footer">Don't have a key? <a href="https://discord.gg/YOUR_INVITE" target="_blank">Get one on our Discord</a></div>
+  </div>
+</div>
+
+<script>
+const WORKER = "https://era-backend.noahsmrx.workers.dev";
+
+document.getElementById('keyInput').addEventListener('input', function() {
+  let v = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  if (v.startsWith('ERA')) v = v.slice(0, 3) + (v.length > 3 ? '-' + v.slice(3) : '');
+  else { if (v.length > 3) v = v.slice(0,3) + '-' + v.slice(3); }
+  if (v.length > 7)  v = v.slice(0,7)  + '-' + v.slice(7);
+  if (v.length > 12) v = v.slice(0,12) + '-' + v.slice(12);
+  this.value = v.slice(0, 19);
+});
+
+function OpenKey() {
+  document.getElementById('keyOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('keyInput').focus(), 150);
+}
+
+function CloseKey() {
+  document.getElementById('keyOverlay').classList.remove('open');
+  document.getElementById('keyError').style.display = 'none';
+  document.getElementById('keyError').textContent = '';
+  document.getElementById('keyInput').value = '';
+  document.getElementById('keyUnlockBtn').disabled = false;
+  document.getElementById('keyUnlockBtn').textContent = 'Unlock download';
+}
+
+async function SubmitKey() {
+  const key = document.getElementById('keyInput').value.trim();
+  const err = document.getElementById('keyError');
+  const btn = document.getElementById('keyUnlockBtn');
+
+  err.style.display = 'none';
+  if (!key) { err.textContent = 'Please enter your key.'; err.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+
+  try {
+    const res = await fetch(`${WORKER}/api/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key }),
+    });
+    const data = await res.json();
+
+    if (data.success && data.download) {
+      btn.textContent = 'Downloading...';
+      window.location.href = data.download;
+      setTimeout(CloseKey, 2000);
+    } else {
+      err.textContent = data.error ?? 'Invalid key. Try again.';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Unlock download';
+    }
+  } catch {
+    err.textContent = 'Server error. Try again later.';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Unlock download';
+  }
+}
+
+document.getElementById('keyUnlockBtn').addEventListener('click', SubmitKey);
+document.getElementById('keyCancelBtn').addEventListener('click', CloseKey);
+document.getElementById('keyCloseBtn').addEventListener('click', CloseKeyy);
+document.getElementById('keyOverlay').addEventListener('click', function(e) {
+  if (e.target === this) CloseKeyy();
+});
+
+document.querySelectorAll('.btn-primary, .nav-cta, .price-action').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    OpenKey();
+  });
+});
 </script>
 </body>
 </html>
