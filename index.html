@@ -728,9 +728,9 @@ async function SubmitKey() {
 
 document.getElementById('keyUnlockBtn').addEventListener('click', SubmitKey);
 document.getElementById('keyCancelBtn').addEventListener('click', CloseKey);
-document.getElementById('keyCloseBtn').addEventListener('click', CloseKeyy);
+document.getElementById('keyCloseBtn').addEventListener('click', CloseKey);
 document.getElementById('keyOverlay').addEventListener('click', function(e) {
-  if (e.target === this) CloseKeyy();
+  if (e.target === this) CloseKey();
 });
 
 document.querySelectorAll('.btn-primary, .nav-cta, .price-action').forEach(btn => {
