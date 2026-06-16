@@ -11,6 +11,24 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
+// ---- Background themes ----
+const THEMES = [
+  { name: 'Midnight', stops: ['#1b2452', '#0a0e22', '#05060f'] },
+  { name: 'Aurora',   stops: ['#0a3a32', '#06201f', '#03100f'] },
+  { name: 'Nebula',   stops: ['#3a1240', '#1c0a26', '#0a0410'] },
+  { name: 'Ember',    stops: ['#3a1f12', '#1f0e0a', '#0d0604'] },
+  { name: 'Deep Sea', stops: ['#10324a', '#06172a', '#030b14'] },
+];
+let themeIdx = 0;
+function applyTheme(i, announce) {
+  themeIdx = ((i % THEMES.length) + THEMES.length) % THEMES.length;
+  const s = THEMES[themeIdx].stops;
+  document.body.style.background =
+    `radial-gradient(ellipse 120% 90% at 50% -10%, ${s[0]} 0%, ${s[1]} 45%, ${s[2]} 100%)`;
+  try { localStorage.setItem('stardust.theme', String(themeIdx)); } catch (e) {}
+  if (announce) showWhisper('Sky shifted to ' + THEMES[themeIdx].name + '.');
+}
+
 // ---- State ----
 const STORE_KEY = 'stardust.sky.v1';
 let stars = [];        // {x,y,r,hue,phase,tw}
@@ -50,16 +68,19 @@ function load() {
     if (d && Array.isArray(d.stars)) {
       stars = d.stars; lines = d.lines || []; labels = d.labels || [];
     }
+    const t = parseInt(localStorage.getItem('stardust.theme') || '0', 10);
+    if (!Number.isNaN(t)) themeIdx = t;
   } catch (e) {}
 }
 load();
+applyTheme(themeIdx, false);
 
 // ---- Helpers ----
-function addStar(x, y) {
+function addStar(x, y, hue) {
   stars.push({
     x, y,
     r: Math.random() * 1.6 + 1.8,
-    hue: 200 + Math.random() * 80,         // blue → violet → pink
+    hue: hue != null ? hue : 200 + Math.random() * 80,   // blue, violet, pink
     phase: Math.random() * Math.PI * 2,
     tw: Math.random() * 0.03 + 0.02,
     born: performance.now(),
@@ -88,6 +109,47 @@ function launchWish() {
     trail: [],
   });
   showWhisper(randWhisper());
+}
+
+// ---- Auto shapes ----
+function drawAutoStar() {
+  const cx = W / 2, cy = H / 2 - 10;
+  const R = Math.min(W, H) * 0.22;
+  const start = stars.length;
+  const hue = 200 + Math.random() * 80;
+  for (let i = 0; i < 5; i++) {
+    const ang = -Math.PI / 2 + i * (Math.PI * 2 / 5);
+    addStar(cx + Math.cos(ang) * R, cy + Math.sin(ang) * R, hue);
+  }
+  // pentagram: connect every second point to form a clean star outline
+  for (let i = 0; i < 5; i++) {
+    lines.push({ a: start + i, b: start + ((i + 2) % 5) });
+  }
+  updateCounts(); save();
+  showWhisper('A five point star takes shape.');
+}
+
+function drawGalaxy() {
+  const cx = W / 2, cy = H / 2 - 10;
+  const arms = 3, perArm = 20;
+  const maxR = Math.min(W, H) * 0.34;
+  const baseHue = 200 + Math.random() * 60;
+  for (let a = 0; a < arms; a++) {
+    const armOffset = a * (Math.PI * 2 / arms);
+    for (let i = 0; i < perArm; i++) {
+      const t = i / perArm;
+      const r = t * maxR;
+      const ang = armOffset + t * 4.2;            // spiral tightness
+      const jitter = (Math.random() - 0.5) * (14 + t * 22);
+      addStar(cx + Math.cos(ang) * r + jitter, cy + Math.sin(ang) * r + jitter, baseHue + t * 40);
+    }
+  }
+  // a few bright core stars
+  for (let i = 0; i < 4; i++) {
+    addStar(cx + (Math.random() - 0.5) * 16, cy + (Math.random() - 0.5) * 16, baseHue);
+  }
+  updateCounts(); save();
+  showWhisper('A galaxy unfurls across the dark.');
 }
 
 // ---- Whispers (poetic micro-lines) ----
@@ -274,6 +336,9 @@ modeButtons.forEach(btn => {
 });
 
 document.getElementById('wishBtn').addEventListener('click', launchWish);
+document.getElementById('starBtn').addEventListener('click', drawAutoStar);
+document.getElementById('galaxyBtn').addEventListener('click', drawGalaxy);
+document.getElementById('skyBtn').addEventListener('click', () => applyTheme(themeIdx + 1, true));
 
 document.getElementById('clearBtn').addEventListener('click', () => {
   stars = []; lines = []; labels = []; pendingConnect = null;
@@ -313,8 +378,9 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   const ex = document.createElement('canvas');
   ex.width = canvas.width; ex.height = canvas.height;
   const exc = ex.getContext('2d');
+  const s = THEMES[themeIdx].stops;
   const g = exc.createRadialGradient(ex.width/2, -ex.height*0.1, 0, ex.width/2, -ex.height*0.1, ex.height*1.2);
-  g.addColorStop(0, '#1b2452'); g.addColorStop(0.45, '#0a0e22'); g.addColorStop(1, '#05060f');
+  g.addColorStop(0, s[0]); g.addColorStop(0.45, s[1]); g.addColorStop(1, s[2]);
   exc.fillStyle = g; exc.fillRect(0, 0, ex.width, ex.height);
   exc.drawImage(canvas, 0, 0);
   const link = document.createElement('a');
