@@ -1,0 +1,39 @@
+/* Stardust â€” eternal night */
+html, body { margin: 0; height: 100%; }
+
+body {
+  background:
+    radial-gradient(ellipse 120% 90% at 50% -10%, #1b2452 0%, #0a0e22 45%, #05060f 100%);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  cursor: crosshair;
+}
+
+#sky { touch-action: none; }
+
+/* Control bar buttons */
+.mode-btn {
+  border-radius: 9999px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.mode-btn:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.mode-btn.is-active {
+  background: linear-gradient(180deg, rgba(129,140,248,0.35), rgba(99,102,241,0.25));
+  border-color: rgba(165,180,252,0.5);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(129,140,248,0.35);
+}
+
+/* Modals */
+.show-flex { display: flex !important; }
+
+/* Subtle entrance for whisper */
+#whisper { text-shadow: 0 0 24px rgba(150,170,255,0.25); }
+
+::selection { background: rgba(129,140,248,0.4); }
