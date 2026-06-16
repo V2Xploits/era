@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stardust — make your own constellations</title>
+  <title>Stardust : make your own constellations</title>
   <script
     src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.0/dist/index.global.js"
     integrity="sha384-nWTzRTCY/9V4Bo352ehygr1c4cnst4XN6lMR3fipakEQrhVpc0hEM5Dii3Amz0sT"
@@ -13,7 +13,7 @@
     @custom-variant dark (&:where(.dark, .dark *));
   </style>
   <script>
-    // Stardust lives in eternal night — always dark.
+    // Stardust lives in eternal night, always dark.
     document.documentElement.classList.add('dark');
   </script>
   <link rel="stylesheet" href="styles.css">
@@ -43,8 +43,8 @@
 
     <!-- Bottom control bar -->
     <footer class="pointer-events-auto px-4 pb-4">
-      <div class="mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md px-3 py-2.5
-                  flex flex-wrap items-center justify-center gap-2 sm:gap-3 shadow-2xl shadow-black/40">
+      <div class="mx-auto w-full max-w-3xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md px-3 py-2.5
+                  flex flex-wrap items-center justify-center gap-2 shadow-2xl shadow-black/40">
         <div class="flex items-center gap-1.5 mr-auto text-xs text-white/50">
           <span id="starCount" class="text-white/80 font-medium tabular-nums">0</span> stars
           <span class="text-white/20">·</span>
@@ -54,6 +54,9 @@
         <button data-mode="place" class="mode-btn is-active">✦ Place</button>
         <button data-mode="connect" class="mode-btn">⟍ Connect</button>
         <button id="wishBtn" class="mode-btn">☄ Wish</button>
+        <button id="starBtn" class="mode-btn">✯ Auto Star</button>
+        <button id="galaxyBtn" class="mode-btn">🌀 Galaxy</button>
+        <button id="skyBtn" class="mode-btn">🎨 Sky</button>
         <button id="clearBtn" class="mode-btn !text-rose-300/80 hover:!bg-rose-500/15">⟲ Clear</button>
         <button id="saveBtn" class="mode-btn">⤓ Save PNG</button>
       </div>
@@ -74,18 +77,20 @@
     </div>
   </div>
 
-  <!-- Help modal -->
   <div id="helpModal" class="fixed inset-0 z-30 hidden items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-auto">
     <div class="w-[min(92vw,26rem)] rounded-2xl border border-white/15 bg-[#0b1020]/90 p-6 shadow-2xl">
       <h2 class="text-white/90 text-lg font-medium mb-3">How to play</h2>
       <ul class="space-y-2.5 text-sm text-white/65">
-        <li><span class="text-indigo-300">✦ Place</span> — click anywhere to scatter a glowing star.</li>
-        <li><span class="text-indigo-300">⟍ Connect</span> — click two stars to draw a line between them. Build a shape, then name it.</li>
-        <li><span class="text-indigo-300">☄ Wish</span> — send a shooting star streaking across your sky.</li>
-        <li><span class="text-indigo-300">⟲ Clear</span> — wipe the sky and begin again.</li>
-        <li><span class="text-indigo-300">⤓ Save</span> — download your sky as an image.</li>
+        <li><span class="text-indigo-300">✦ Place</span> : click anywhere to scatter a glowing star.</li>
+        <li><span class="text-indigo-300">⟍ Connect</span> : click two stars to draw a line between them, then name your shape.</li>
+        <li><span class="text-indigo-300">☄ Wish</span> : send a shooting star streaking across your sky.</li>
+        <li><span class="text-indigo-300">✯ Auto Star</span> : drop a ready made five point star.</li>
+        <li><span class="text-indigo-300">✦ Galaxy</span> : spin up a swirling spiral of stars.</li>
+        <li><span class="text-indigo-300">☁︎ Sky</span> : cycle the background through different cosmic moods.</li>
+        <li><span class="text-indigo-300">⟲ Clear</span> : wipe the sky and begin again.</li>
+        <li><span class="text-indigo-300">⤓ Save</span> : download your sky as an image.</li>
       </ul>
-      <p class="text-xs text-white/35 mt-4">Tip: your sky saves itself automatically — close the tab and it'll be waiting.</p>
+      <p class="text-xs text-white/35 mt-4">Tip: your sky saves itself automatically, so close the tab and it will be waiting.</p>
       <button id="helpClose" class="mt-5 w-full rounded-lg bg-white/10 hover:bg-white/15 text-white/85 py-2 text-sm">got it</button>
     </div>
   </div>
